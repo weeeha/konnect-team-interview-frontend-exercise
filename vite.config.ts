@@ -17,6 +17,13 @@ export default defineConfig({
   },
   css: {
     devSourcemap: true,
+    preprocessorOptions: {
+      scss: {
+        api: 'modern',
+        // Make the design tokens available in every component style block
+        additionalData: '@use "@/assets/styles/variables" as *;',
+      },
+    },
   },
   server: {
     open: true,

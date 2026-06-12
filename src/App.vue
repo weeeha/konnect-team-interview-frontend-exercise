@@ -1,54 +1,47 @@
 <template>
-  <header>
-    <div class="nav">
-      <router-link to="/">
-        Home
-      </router-link>
-    </div>
-  </header>
+  <AppNavBar />
   <main>
-    <router-view />
+    <RouterView v-slot="{ Component }">
+      <!-- Keep the catalog alive so search/pagination state survives
+           navigating into a service and back -->
+      <KeepAlive include="PageHome">
+        <component :is="Component" />
+      </KeepAlive>
+    </RouterView>
   </main>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-  name: 'App',
-})
+<script setup lang="ts">
+import AppNavBar from '@/components/AppNavBar.vue'
 </script>
 
-<style lang="scss" scoped>
-.nav {
-  border-bottom: 1px solid #333;
-  margin-bottom: 4rem;
-  padding: 16px;
-
-  a {
-    color: blue;
-    font-weight: 700;
-
-    &.router-link-exact-active {
-      color: green;
-    }
-  }
-}
-</style>
-
 <style lang="scss">
-// Unscoped styles for html and body
+// Unscoped application-level styles
 html {
+  box-sizing: border-box;
   font-size: 10px;
   margin: 0;
   padding: 0;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
 body {
-  font-family: Arial, sans-serif;
+  background-color: $color-page-background;
+  color: $color-text-primary;
+  font-family: Inter, Helvetica, Arial, sans-serif;
   font-size: 1.6rem;
+  -webkit-font-smoothing: antialiased;
   font-weight: 400;
   line-height: 1.2;
-  margin: 0 auto;
+  margin: 0;
+}
+
+img {
+  display: block;
 }
 </style>
