@@ -1,69 +1,79 @@
-# Welcome
+# Konnect Service Hub — take-home exercise
 
-Please take the time to read through all of the sections below; we want you to do great! :rocket:
+A Vue 3 + TypeScript implementation of the Service Hub catalog from the
+[Core UI Team Project mock](https://www.figma.com/file/swzJVL624G434CVdWi3FLv/Core-UI-Team-Project).
 
-Feel free to reach out to your recruiting contact with any questions or concerns.
+## Quick start
 
-## Goal
+```sh
+pnpm install
 
-Modify the provided Vue 3 app to match [this mock](https://www.figma.com/file/swzJVL624G434CVdWi3FLv/Core-UI-Team-Project) as closely as possible while utilizing best-practices to improve the codebase and implement the functional requirements outlined below.
+# Terminal 1 — mock API on :4001
+pnpm dev:server
 
-- The provided exercise files are a starting point and they have room for improvement; feel free to modify
-- Don't treat the mock as gospel -- if you see things that don't make sense, ask questions or implement what you think is right
-- In the exercise you are utilizing a local API; however, code your submission as if you are using a production API, accounting for typical issues that can occur
+# Terminal 2 — Vue app
+pnpm dev:ui
+```
 
-### Links
-
-- Figma Mock: <https://www.figma.com/file/swzJVL624G434CVdWi3FLv/Core-UI-Team-Project>
-- Acceptance criteria: <https://docs.google.com/document/d/1AIXTtrEMZBnfoLYXDlBYiEB-BTk7XNt2QlY7jWYdPv0/edit?tab=t.0#heading=h.8hapmwf98sj>
-
-## Functional Requirements
-
-- [Vue 3](https://vuejs.org/) and TypeScript
-- Please do not use component libraries as the goal is to implement the design and functionality yourself
-- User should be able to view the name, a brief description, versions available, and other info shown in the mock for services
-- User should be able to search for services ([See search endpoint details below](#searching-the-services-endpoint))
-- User should be able to click on a service to view more details
-- User should be able to paginate through services (client-side implementation)
-- The create Service Package button doesn't have to be operable -- interacting with this elements could do nothing, could be fully implemented (stretch goal), or something in between
-- Please update the `README` in the project with a section to describe your design considerations, assumptions, and trade-offs made during this exercise. Also feel free to include any notes about your submission
-
-## Additional Considerations (if applicable)
-
-- The UI should be responsive and look great at different browser viewport sizes
-- Pixel-perfect implementation
-- Routing and views (e.g. navigating to a given service from its card)
-- State management with [Pinia](https://pinia.vuejs.org/)
-- [Component Tests and/or Unit Tests](#run-component-and-unit-tests-with-vitest-and-optionally-vue-test-utils)
-- Other items covered in your Panel 1 interview
-
-## Evaluation
-
-We will review your code for quality and your ability to talk through it, how you approach the UI, and what tradeoffs you make. Specifically we'll be looking at the following:
-
-- How closely your implementation matches the design along with the other [Functional Requirements](#functional-requirements)
-- Code quality, including appropriate componentization and modularity
-- TypeScript usage
-- Coding (and Vue) best-practices
-- The project should pass type checking and build successfully
-- How you dedicate the allotted time to focus on your strengths
-- Test coverage, if applicable
-
-## How to submit the project
-
-You have up to a week to complete the exercise, but we don't expect you to spend more than a few hours on it.
-
-When it's ready, please send your recruiter a link to the source code in a GitHub repository (no Pull Requests).
+Quality gates: `pnpm test` (55 tests), `pnpm build` (runs lint, stylelint, typecheck and the production build).
 
 ---
 
-## Project Setup
+## Submission notes
 
-### Clone the repository
+### What's implemented
 
-```sh
-git clone git@github.com:Kong/konnect-team-interview-frontend-exercise.git
-```
+- **Service catalog** matching the mock: status badge (`Published to portal` / `Unpublished` / `In progress`), versions pill, name, two-line clamped description, metrics with the green bullets, and developer avatars with a `+N` overflow chip
+- **Search** through the API's `q` parameter (name, description and type are searchable server-side), debounced at 250 ms
+- **Client-side pagination**, 9 cards per page as in the mock (`1 to 9 of 42 services`), with boundary-disabled round arrow buttons
+- **Service detail route** (`/services/:id`) — summary panel plus a versions list (semver, description, type chip, developer, relative "updated" time). The mock doesn't cover this view, so the design extrapolates the catalog's visual language
+- **Create Service Package** opens an explanatory modal dialog (focus management, `Esc`/backdrop close, body scroll lock)
+- **Loading skeletons**, **error state with retry**, **empty state** ("clear search" when a query produced it), and a **not-found** page/state for unknown routes and ids
+- **Responsive**: 3 / 2 / 1-column grid, header controls reflow, nav collapses to icons (labels stay available to screen readers)
+
+### Design decisions
+
+- **Composition API with `<script setup>` everywhere.** The starter's `defineComponent` files were migrated; SFC + `script setup` is current Vue best practice and what Kong's own UI code uses.
+- **Typed domain model** ([src/types/service.ts](src/types/service.ts)) mirrors the API payload, with optionality encoded where the data actually omits values (`metrics`, `version.developer`). The UI status is *derived* once in `getServiceStatus()` instead of scattering `published`/`configured` conditionals through templates.
+- **Data layer as composables.**
+  - [`useServices(query)`](src/composables/useServices.ts) fetches the list and refetches when the (debounced) query changes. In-flight requests are aborted when superseded — a slow earlier response can never overwrite newer results (the classic search race condition).
+  - [`useService(id)`](src/composables/useService.ts) powers detail deep-links. The mock API has no `GET /services/:id`, so it narrows the collection with `?q={id}` (ids are searchable) and exact-matches — avoiding a full-catalog fetch per detail view.
+  - [`usePagination(items, pageSize)`](src/composables/usePagination.ts) is a small generic for the required client-side pagination; it resets when the source list changes.
+- **No Pinia (deliberately).** All state here is route-local; there is no cross-view shared state that would justify a store. Instead, the catalog view is kept alive (`KeepAlive`) so search + page survive navigating into a service and back. If the app grew (auth/user context, cross-page filters, cached entities), Pinia is where I'd reach first — the composables' return shape would port to a store almost 1:1. The starter's unused example store and the Pinia dependency were removed rather than left as dead code.
+- **Design tokens as SCSS variables** ([src/assets/styles/_variables.scss](src/assets/styles/_variables.scss)), injected via Vite's `additionalData` so every component sees them without imports, and typos fail the build (unlike CSS custom properties, which fail silently at runtime).
+- **Pixel fidelity**: the Figma file is view-only (no Dev Mode inspection), so colors, spacing and sizes were sampled from the delivered mock render (card grid 426×232 @ 40 px gutters, nav gradient `#092251 → #083481`, brand `#07a88d`, etc.), and the logo/icons use the original exported SVG geometry.
+- **Production-API mindset**: aborted stale requests, error + retry paths, malformed-payload guard, empty states, and avatar `onerror` fallback to initials — the mock data actually contains dead `cloudflare-ipfs.com` avatar URLs, so the fallback is exercised for real.
+- **Accessibility**: semantic landmarks, `aria-label`s on icon-only buttons, `aria-live` pagination summary, focus-visible rings throughout, modal focus trap-and-restore, and the whole card is a real link (keyboard + middle-click friendly).
+
+### Assumptions
+
+- Status mapping per the acceptance criteria: not configured → `In progress`; configured → `Published to portal` / `Unpublished`. Unconfigured services show "Not configured with runtime yet" in place of metrics.
+- Developer avatars only appear on **published** services (matches both the criteria and the data — unpublished versions carry no `developer`).
+- The versions pill is hidden when a service has no versions (matches the mock's "In progress" cards).
+- Duplicate developers across versions are de-duplicated before rendering the avatar stack.
+- Metric formatting follows the mock: `0.83ms latency`, `99.98% uptime`, `23k requests · 3.74% errors` (compact, lowercase suffix).
+- "Learn more" links to the public Service Hub docs; the nav items (Organization / Settings / user) are decorative, per the mock's scope.
+- Page size is fixed at 9 (the mock's `1 to 9 of 42`).
+
+### Trade-offs & what I'd do next
+
+- **Pagination is client-side** (per the requirements). With a real API I'd move it server-side (`?page=&size=` or cursors) and likely fold search + pagination into one query-driven composable.
+- **Detail data comes from the search endpoint.** Fine for the exercise; a production API should expose `GET /services/:id` (and the catalog payload would likely be a slimmer projection).
+- **Testing** focuses on behavior: composables (fetching, races, pagination), formatting utils, and component states (loading / error / empty / results, search debounce, pagination interaction, avatar fallback). With more time: Playwright e2e against the real mock server, axe accessibility audit, and visual regression on the card grid.
+- **The detail view design is my own** — in a real project that's a conversation with design before building.
+- Versions sort newest-first by `updated_at`; the API doesn't specify an order.
+
+### Repo housekeeping
+
+- Conventional commits throughout (`feat:`, `test:`, `docs:`, `chore:`); the starter scaffold was imported as a baseline commit first so the diff that follows is all exercise work.
+- `pnpm build` passes type checking, ESLint and Stylelint cleanly; `pnpm test` runs the 55-test suite.
+
+---
+
+## Original starter documentation
+
+<details>
+<summary>Setup, linting, testing and commit guidance from the original README</summary>
 
 ### pnpm
 
@@ -89,7 +99,7 @@ In a separate terminal, start the Vue app:
 pnpm dev:ui
 ```
 
-## Searching the services endpoint
+### Searching the services endpoint
 
 The local API is available at `http://localhost:4001` after running `pnpm dev:server`.
 
@@ -97,7 +107,7 @@ Searching this endpoint is supported by passing a query string with a value to s
 
 **Note**: The search endpoint evaluates all property values as a `string` to determine a match.
 
-### Searchable properties
+#### Searchable properties
 
 The search endpoint is configured to search the following fields for each service within the JSON response:
 
@@ -110,7 +120,7 @@ The search endpoint is configured to search the following fields for each servic
 }
 ```
 
-### Search example
+#### Search example
 
 If I wanted to search for a service with "dogs" in the service name, I would pass the name in the query string:
 
@@ -142,7 +152,7 @@ pnpm stylelint:fix
 
 ### Run Component and Unit Tests with [Vitest](https://vitest.dev/) and optionally [Vue Test Utils](https://test-utils.vuejs.org/)
 
-Component and unit test files must be located in the `/src/` directory and have a filename format of `*.spec.ts`. In the starter project, see `src/components/ServiceCatalog.spec.ts` for an example.
+Component and unit test files must be located in the `/src/` directory and have a filename format of `*.spec.ts`.
 
 ```sh
 # Run tests
@@ -195,3 +205,5 @@ pnpm commit
 ```
 
 This will trigger the Commitizen interactive prompt for building your commit message.
+
+</details>
