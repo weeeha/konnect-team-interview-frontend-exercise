@@ -1,0 +1,49 @@
+// Design tokens sampled from the Service Hub mock
+// (Figma: Core-UI-Team-Project)
+
+// Brand
+$color-brand: #07a88d;
+$color-brand-dark: #00755f;
+
+// Service status
+$color-status-published: #14b59a;
+$color-status-unpublished: #b2bbcc;
+$color-status-in-progress: #fabe5f;
+$color-metric-bullet: #42d782;
+
+// Text
+$color-text-primary: #3c4557;
+$color-text-secondary: #707888;
+$color-text-muted: #adb6c8;
+$color-link: #1456cb;
+
+// Surfaces
+$color-page-background: #f8f8fa;
+$color-surface: #fff;
+$color-border: #e7e7ec;
+
+// Pills / chips
+$color-pill-background: #f2f6fe;
+$color-pill-text: #5888db;
+$color-chip-background: #f1f1f8;
+$color-chip-text: #777d8a;
+
+// Top navigation
+$color-nav-gradient-top: #092251;
+$color-nav-gradient-bottom: #083481;
+$color-nav-user-panel: #072863;
+
+// Elevation
+$shadow-card: 0 2px 4px rgb(60 69 87 / 4%);
+$shadow-card-hover: 0 6px 16px rgb(60 69 87 / 12%);
+$shadow-modal: 0 12px 32px rgb(9 34 81 / 24%);
+
+// Layout
+$content-max-width: 1400px;
+$page-padding: 2rem;
+$nav-height: 7rem;
+
+// Breakpoints
+$breakpoint-sm: 640px;
+$breakpoint-md: 880px;
+$breakpoint-lg: 1140px;
