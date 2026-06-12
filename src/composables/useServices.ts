@@ -1,42 +1,70 @@
-import { ref, onBeforeMount } from 'vue'
+import { ref, watch, type Ref } from 'vue'
 import axios from 'axios'
+import type { Service } from '@/types/service'
 
-// This composable is a simplified example for the exercise **and could likely be improved**.
-// Feel free to leave as-is, modify, or remove this file (and any others) as desired.
-// https://vuejs.org/guide/reusability/composables.html
+interface UseServicesReturn {
+  services: Ref<Service[]>
+  loading: Ref<boolean>
+  error: Ref<boolean>
+  refetch: () => Promise<void>
+}
 
-export default function useServices(): any {
-  const services = ref<any[]>([])
-  const loading = ref<any>(false)
-  const error = ref<any>(false)
+/**
+ * Fetches the list of services from the API.
+ *
+ * When a reactive `searchQuery` is provided, the list is refetched whenever
+ * the query changes (search is performed server-side via `/api/services?q=`).
+ * In-flight requests are aborted when superseded so a slow earlier response
+ * can never overwrite the results of a newer one.
+ */
+export default function useServices(searchQuery?: Readonly<Ref<string>>): UseServicesReturn {
+  const services = ref<Service[]>([])
+  const loading = ref(true)
+  const error = ref(false)
 
-  const getServices = async (): Promise<any> => {
+  let activeController: AbortController | undefined
+
+  const getServices = async (): Promise<void> => {
+    activeController?.abort()
+    const controller = new AbortController()
+    activeController = controller
+
+    loading.value = true
+    error.value = false
+
     try {
-      // Initialize loading state
-      loading.value = true
+      const query = searchQuery?.value.trim()
+      const { data } = await axios.get<Service[]>('/api/services', {
+        params: query ? { q: query } : undefined,
+        signal: controller.signal,
+      })
 
-      // Fetch data from the API
-      const { data } = await axios.get('/api/services')
-
-      // Store data in Vue ref
-      services.value = data
-    } catch (err: any) {
+      // Guard against a malformed (e.g. proxied error page) response body
+      services.value = Array.isArray(data) ? data : []
+    } catch (err) {
+      // A canceled request means a newer one is in flight; keep its state
+      if (axios.isCancel(err)) {
+        return
+      }
+      services.value = []
       error.value = true
     } finally {
-      // Reset loading state
-      loading.value = false
+      if (activeController === controller) {
+        loading.value = false
+      }
     }
   }
 
-  onBeforeMount(async (): Promise<void> => {
-    // Fetch services from the API
-    await getServices()
-  })
+  if (searchQuery) {
+    watch(searchQuery, getServices, { immediate: true })
+  } else {
+    getServices()
+  }
 
-  // Return stateful data
   return {
     services,
     loading,
     error,
+    refetch: getServices,
   }
 }
