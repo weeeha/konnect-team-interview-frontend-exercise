@@ -20,8 +20,17 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         api: 'modern',
-        // Make the design tokens available in every component style block
-        additionalData: '@use "@/assets/styles/variables" as *;',
+        // Make the design tokens available in every component style block.
+        // The variables file itself must be skipped, otherwise it would
+        // `@use` itself (it now re-exports the Kong tokens) and Sass throws a
+        // module-loop error.
+        additionalData: (source: string, filename: string) => {
+          if (filename.replace(/\\/g, '/').endsWith('/assets/styles/_variables.scss')) {
+            return source
+          }
+
+          return `@use "@/assets/styles/variables" as *;\n${source}`
+        },
       },
     },
   },

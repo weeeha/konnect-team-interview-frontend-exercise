@@ -7,12 +7,12 @@
         </h1>
         <p class="service-catalog__subtitle">
           Organize services, manage and track versioning and API service documentation.
-          <a
+          <KExternalLink
             class="service-catalog__learn-more"
             href="https://docs.konghq.com/konnect/servicehub/"
-            rel="noopener noreferrer"
-            target="_blank"
-          >Learn more</a>
+          >
+            Learn more
+          </KExternalLink>
         </p>
       </div>
       <div class="service-catalog__actions">
@@ -21,15 +21,15 @@
           class="service-catalog__search"
           placeholder="Search"
         />
-        <button
+        <KButton
+          appearance="primary"
           class="service-catalog__create-button"
           data-testid="create-service-package"
-          type="button"
           @click="createDialogOpen = true"
         >
-          <IconPlus />
+          <AddIcon decorative />
           Service Package
-        </button>
+        </KButton>
       </div>
     </div>
 
@@ -49,51 +49,46 @@
       </li>
     </ul>
 
-    <div
+    <KEmptyState
       v-else-if="error"
       class="service-catalog__notice"
       data-testid="error-state"
+      icon-variant="error"
+      message="We couldn't load your services. Check your connection and try again."
+      title="Something went wrong"
     >
-      <p class="service-catalog__notice-title">
-        Something went wrong
-      </p>
-      <p class="service-catalog__notice-text">
-        We couldn't load your services. Check your connection and try again.
-      </p>
-      <button
-        class="service-catalog__retry-button"
-        data-testid="retry-button"
-        type="button"
-        @click="refetch"
-      >
-        Try again
-      </button>
-    </div>
+      <template #action>
+        <KButton
+          appearance="primary"
+          data-testid="retry-button"
+          @click="refetch"
+        >
+          Try again
+        </KButton>
+      </template>
+    </KEmptyState>
 
-    <div
+    <KEmptyState
       v-else-if="!services.length"
       class="service-catalog__notice"
       data-testid="no-results"
+      :icon-variant="activeQuery ? 'search' : 'default'"
+      :message="activeQuery ? `Your search for “${activeQuery}” did not match any services.` : ''"
+      :title="activeQuery ? 'No services found' : 'No services yet'"
     >
-      <p class="service-catalog__notice-title">
-        {{ activeQuery ? 'No services found' : 'No services yet' }}
-      </p>
-      <p
+      <template
         v-if="activeQuery"
-        class="service-catalog__notice-text"
+        #action
       >
-        Your search for &ldquo;{{ activeQuery }}&rdquo; did not match any services.
-      </p>
-      <button
-        v-if="activeQuery"
-        class="service-catalog__retry-button"
-        data-testid="clear-search-button"
-        type="button"
-        @click="searchQuery = ''"
-      >
-        Clear search
-      </button>
-    </div>
+        <KButton
+          appearance="tertiary"
+          data-testid="clear-search-button"
+          @click="searchQuery = ''"
+        >
+          Clear search
+        </KButton>
+      </template>
+    </KEmptyState>
 
     <template v-else>
       <ul
@@ -119,31 +114,26 @@
       />
     </template>
 
-    <BaseModal
-      :open="createDialogOpen"
+    <KModal
+      action-button-text="Got it"
+      data-testid="modal"
+      hide-cancel-button
       title="Create Service Package"
-      @close="createDialogOpen = false"
+      :visible="createDialogOpen"
+      @cancel="createDialogOpen = false"
+      @proceed="createDialogOpen = false"
     >
       Creating service packages is not part of this exercise, but this is
       where the creation flow would begin.
-      <template #footer>
-        <button
-          class="service-catalog__create-button"
-          type="button"
-          @click="createDialogOpen = false"
-        >
-          Got it
-        </button>
-      </template>
-    </BaseModal>
+    </KModal>
   </section>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import BaseModal from '@/components/BaseModal.vue'
+import { KButton, KEmptyState, KExternalLink, KModal } from '@kong/kongponents'
+import { AddIcon } from '@kong/icons'
 import CatalogPagination from '@/components/CatalogPagination.vue'
-import IconPlus from '@/components/icons/IconPlus.vue'
 import SearchInput from '@/components/SearchInput.vue'
 import ServiceCard from '@/components/ServiceCard.vue'
 import ServiceCardSkeleton from '@/components/ServiceCardSkeleton.vue'
@@ -179,82 +169,55 @@ const createDialogOpen = ref(false)
 .service-catalog {
   margin: 0 auto;
   max-width: $content-max-width;
-  padding: 4.8rem $page-padding 4rem;
+  padding: $kui-space-110 $page-padding $kui-space-100;
 
   &__header {
     align-items: flex-start;
     display: flex;
     flex-wrap: wrap;
-    gap: 2rem 2.4rem;
+    gap: $kui-space-70 $kui-space-80;
     justify-content: space-between;
-    margin-bottom: 2.8rem;
+    margin-bottom: $kui-space-90;
   }
 
   &__title {
     color: $color-text-primary;
-    font-size: 3.2rem;
-    font-weight: 700;
-    line-height: 3.6rem;
+    font-size: $kui-font-size-80;
+    font-weight: $kui-font-weight-bold;
+    line-height: $kui-line-height-70;
     margin: 0;
   }
 
   &__subtitle {
     color: $color-text-primary;
-    font-size: 1.6rem;
-    line-height: 2.4rem;
-    margin: 1.6rem 0 0;
+    font-size: $kui-font-size-40;
+    line-height: $kui-line-height-40;
+    margin: $kui-space-60 0 0;
   }
 
-  &__learn-more {
+  &__learn-more.k-external-link {
     color: $color-link;
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
+    font-weight: $kui-font-weight-regular;
   }
 
   &__actions {
     align-items: center;
     display: flex;
     flex-wrap: wrap;
-    gap: 1.6rem 2.4rem;
+    gap: $kui-space-60 $kui-space-80;
   }
 
-  &__search {
-    width: 21rem;
-  }
-
-  &__create-button {
-    align-items: center;
-    background-color: $color-brand;
-    border: none;
-    border-radius: 10rem;
-    color: #fff;
-    cursor: pointer;
-    display: inline-flex;
-    font-family: inherit;
-    font-size: 1.6rem;
-    font-weight: 600;
-    gap: 0.8rem;
-    height: 4.4rem;
-    justify-content: center;
-    padding: 0 2.4rem 0 1.6rem;
-    transition: background-color 0.2s ease;
-
-    &:hover {
-      background-color: $color-brand-dark;
-    }
-
-    &:focus-visible {
-      outline: 2px solid $color-brand;
-      outline-offset: 2px;
-    }
+  // The mock's create button is a teal pill; reshape Kong's primary button
+  &__create-button.k-button {
+    border-radius: $kui-border-radius-round;
+    font-size: $kui-font-size-40;
+    height: 44px;
+    padding: 0 $kui-space-80;
   }
 
   &__grid {
     display: grid;
-    gap: 4rem;
+    gap: $kui-space-100;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     list-style: none;
     margin: 0;
@@ -274,66 +237,22 @@ const createDialogOpen = ref(false)
     }
 
     @media (max-width: $breakpoint-sm) {
-      gap: 2rem;
+      gap: $kui-space-70;
       grid-template-columns: 1fr;
     }
   }
 
   &__pagination {
-    margin-top: 2.4rem;
+    margin-top: $kui-space-80;
   }
 
   &__notice {
-    align-items: center;
-    background-color: $color-surface;
-    border-radius: 0.2rem;
-    box-shadow: $shadow-card;
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
     margin: 0 auto;
-    padding: 6.4rem 2.4rem;
-    text-align: center;
-  }
-
-  &__notice-title {
-    color: $color-text-primary;
-    font-size: 1.8rem;
-    font-weight: 600;
-    margin: 0;
-  }
-
-  &__notice-text {
-    color: $color-text-secondary;
-    font-size: 1.4rem;
-    margin: 0;
-  }
-
-  &__retry-button {
-    background-color: transparent;
-    border: 1px solid $color-border;
-    border-radius: 0.4rem;
-    color: $color-text-primary;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 1.4rem;
-    font-weight: 600;
-    margin-top: 1.2rem;
-    padding: 0.9rem 2rem;
-    transition: border-color 0.2s ease;
-
-    &:hover {
-      border-color: $color-text-muted;
-    }
-
-    &:focus-visible {
-      outline: 2px solid $color-pill-text;
-      outline-offset: 2px;
-    }
+    padding: $kui-space-130 $kui-space-80;
   }
 
   @media (max-width: $breakpoint-md) {
-    padding-top: 2.4rem;
+    padding-top: $kui-space-80;
 
     &__search {
       flex-grow: 1;

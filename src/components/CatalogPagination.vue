@@ -4,16 +4,17 @@
     class="catalog-pagination"
     data-testid="pagination"
   >
-    <button
+    <KButton
+      appearance="tertiary"
       aria-label="Previous page"
       class="catalog-pagination__button"
       data-testid="pagination-previous"
       :disabled="!hasPreviousPage"
-      type="button"
+      icon
       @click="emit('previous')"
     >
-      <IconArrow direction="left" />
-    </button>
+      <ArrowLeftIcon decorative />
+    </KButton>
     <p
       aria-live="polite"
       class="catalog-pagination__summary"
@@ -22,21 +23,23 @@
       <span class="catalog-pagination__range">{{ rangeStart }} to {{ rangeEnd }}</span>
       of {{ totalItems }} {{ totalItems === 1 ? 'service' : 'services' }}
     </p>
-    <button
+    <KButton
+      appearance="tertiary"
       aria-label="Next page"
       class="catalog-pagination__button"
       data-testid="pagination-next"
       :disabled="!hasNextPage"
-      type="button"
+      icon
       @click="emit('next')"
     >
-      <IconArrow direction="right" />
-    </button>
+      <ArrowRightIcon decorative />
+    </KButton>
   </nav>
 </template>
 
 <script setup lang="ts">
-import IconArrow from '@/components/icons/IconArrow.vue'
+import { KButton } from '@kong/kongponents'
+import { ArrowLeftIcon, ArrowRightIcon } from '@kong/icons'
 
 defineProps<{
   rangeStart: number
@@ -56,51 +59,34 @@ const emit = defineEmits<{
 .catalog-pagination {
   align-items: center;
   display: flex;
-  gap: 2.4rem;
+  gap: $kui-space-80;
   justify-content: center;
 
-  &__button {
-    align-items: center;
-    background-color: transparent;
+  // Reshape Kong's icon button into the mock's round, outlined arrow control
+  &__button.k-button {
     border: 1px solid rgb(20 86 203 / 20%);
-    border-radius: 50%;
+    border-radius: $kui-border-radius-circle;
     color: $color-link;
-    cursor: pointer;
-    display: inline-flex;
-    flex-shrink: 0;
-    height: 4.4rem;
-    justify-content: center;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
-    width: 4.4rem;
-
-    &:hover:not(:disabled) {
-      background-color: rgb(20 86 203 / 6%);
-      border-color: rgb(20 86 203 / 40%);
-    }
-
-    &:focus-visible {
-      outline: 2px solid rgb(20 86 203 / 40%);
-      outline-offset: 2px;
-    }
+    height: 44px;
+    width: 44px;
 
     &:disabled {
       border-color: rgb(0 0 0 / 10%);
       color: $color-text-muted;
-      cursor: default;
     }
   }
 
   &__summary {
     color: $color-text-secondary;
-    font-size: 1.3rem;
-    line-height: 2rem;
+    font-size: 13px;
+    line-height: $kui-line-height-30;
     margin: 0;
     text-align: center;
   }
 
   &__range {
     color: $color-text-primary;
-    font-weight: 600;
+    font-weight: $kui-font-weight-semibold;
   }
 }
 </style>

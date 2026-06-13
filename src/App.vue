@@ -19,7 +19,6 @@ import AppNavBar from '@/components/AppNavBar.vue'
 // Unscoped application-level styles
 html {
   box-sizing: border-box;
-  font-size: 10px;
   margin: 0;
   padding: 0;
 }
@@ -33,11 +32,11 @@ html {
 body {
   background-color: $color-page-background;
   color: $color-text-primary;
-  font-family: Inter, Helvetica, Arial, sans-serif;
-  font-size: 1.6rem;
+  font-family: $kui-font-family-text;
+  font-size: $kui-font-size-40;
   -webkit-font-smoothing: antialiased;
-  font-weight: 400;
-  line-height: 1.2;
+  font-weight: $kui-font-weight-regular;
+  line-height: $kui-line-height-40;
   margin: 0;
 }
 

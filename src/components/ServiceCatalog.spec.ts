@@ -162,14 +162,15 @@ describe('ServiceCatalog', () => {
     const wrapper = mountCatalog()
     await flushPromises()
 
-    expect(document.querySelector('[data-testid="modal"]')).toBeNull()
+    // KModal renders inline and only while visible
+    expect(wrapper.findTestId('modal').exists()).toBe(false)
 
     await wrapper.findTestId('create-service-package').trigger('click')
-    expect(document.querySelector('[data-testid="modal"]')).not.toBeNull()
+    expect(wrapper.findTestId('modal').exists()).toBe(true)
 
-    document.querySelector<HTMLButtonElement>('[data-testid="modal-close"]')?.click()
+    await wrapper.findTestId('modal-close-icon').trigger('click')
     await flushPromises()
 
-    expect(document.querySelector('[data-testid="modal"]')).toBeNull()
+    expect(wrapper.findTestId('modal').exists()).toBe(false)
   })
 })
