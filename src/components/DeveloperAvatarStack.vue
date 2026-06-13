@@ -69,23 +69,23 @@ function getInitials(name: string): string {
 
   // Later siblings stack on top, matching the mock (rightmost avatar on top)
   > * + * {
-    margin-left: -0.9rem;
+    margin-left: -9px;
   }
 
   &__avatar {
     background-color: $color-chip-background;
-    border-radius: 50%;
+    border-radius: $kui-border-radius-circle;
     flex-shrink: 0;
-    height: 3.6rem;
+    height: 36px;
     object-fit: cover;
-    width: 3.6rem;
+    width: 36px;
 
     &--initials {
       align-items: center;
       color: $color-chip-text;
       display: inline-flex;
-      font-size: 1.2rem;
-      font-weight: 600;
+      font-size: $kui-font-size-20;
+      font-weight: $kui-font-weight-semibold;
       justify-content: center;
     }
   }
@@ -93,15 +93,15 @@ function getInitials(name: string): string {
   &__overflow {
     align-items: center;
     background-color: $color-chip-background;
-    border-radius: 50%;
+    border-radius: $kui-border-radius-circle;
     color: $color-chip-text;
     display: inline-flex;
     flex-shrink: 0;
-    font-size: 1.4rem;
-    font-weight: 500;
-    height: 3.6rem;
+    font-size: $kui-font-size-30;
+    font-weight: $kui-font-weight-medium;
+    height: 36px;
     justify-content: center;
-    width: 3.6rem;
+    width: 36px;
   }
 }
 </style>

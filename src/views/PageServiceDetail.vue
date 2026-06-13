@@ -5,57 +5,63 @@
       data-testid="back-link"
       :to="{ name: 'home' }"
     >
-      <IconArrow direction="left" />
+      <ArrowLeftIcon
+        decorative
+        :size="16"
+      />
       Back to Service Hub
     </RouterLink>
 
-    <div
+    <KCard
       v-if="loading"
       aria-busy="true"
       class="service-detail__panel service-detail__panel--loading"
       data-testid="loading-state"
     >
-      <span class="service-detail__skeleton service-detail__skeleton--badge" />
-      <span class="service-detail__skeleton service-detail__skeleton--title" />
-      <span class="service-detail__skeleton service-detail__skeleton--text" />
-    </div>
+      <KSkeletonBox
+        height="1"
+        width="25"
+      />
+      <KSkeletonBox
+        height="2"
+        width="50"
+      />
+      <KSkeletonBox
+        height="1"
+        width="75"
+      />
+    </KCard>
 
-    <div
+    <KEmptyState
       v-else-if="error"
       class="service-detail__panel service-detail__panel--notice"
       data-testid="error-state"
+      icon-variant="error"
+      message="We couldn't load this service. Check your connection and try again."
+      title="Something went wrong"
     >
-      <p class="service-detail__notice-title">
-        Something went wrong
-      </p>
-      <p class="service-detail__notice-text">
-        We couldn't load this service. Check your connection and try again.
-      </p>
-      <button
-        class="service-detail__retry-button"
-        data-testid="retry-button"
-        type="button"
-        @click="refetch"
-      >
-        Try again
-      </button>
-    </div>
+      <template #action>
+        <KButton
+          appearance="primary"
+          data-testid="retry-button"
+          @click="refetch"
+        >
+          Try again
+        </KButton>
+      </template>
+    </KEmptyState>
 
-    <div
+    <KEmptyState
       v-else-if="notFound"
+      :action-button-visible="false"
       class="service-detail__panel service-detail__panel--notice"
       data-testid="not-found-state"
-    >
-      <p class="service-detail__notice-title">
-        Service not found
-      </p>
-      <p class="service-detail__notice-text">
-        The service you are looking for doesn't exist or may have been removed.
-      </p>
-    </div>
+      message="The service you are looking for doesn't exist or may have been removed."
+      title="Service not found"
+    />
 
     <template v-else-if="service">
-      <div
+      <KCard
         class="service-detail__panel"
         data-testid="service-summary"
       >
@@ -82,9 +88,9 @@
           class="service-detail__metrics"
           :metrics="service.metrics"
         />
-      </div>
+      </KCard>
 
-      <div class="service-detail__panel">
+      <KCard class="service-detail__panel">
         <h2 class="service-detail__section-title">
           Versions ({{ service.versions.length }})
         </h2>
@@ -104,7 +110,12 @@
                 {{ version.description }}
               </p>
             </div>
-            <span class="version-list__type-chip">{{ service.type }}</span>
+            <KBadge
+              appearance="info"
+              class="version-list__type-chip"
+            >
+              {{ service.type }}
+            </KBadge>
             <div class="version-list__developer">
               <template v-if="version.developer">
                 <DeveloperAvatarStack :developers="[version.developer]" />
@@ -126,7 +137,7 @@
         >
           This service doesn't have any versions yet.
         </p>
-      </div>
+      </KCard>
     </template>
   </section>
 </template>
@@ -134,8 +145,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { KBadge, KButton, KCard, KSkeletonBox } from '@kong/kongponents'
+import { ArrowLeftIcon } from '@kong/icons'
 import DeveloperAvatarStack from '@/components/DeveloperAvatarStack.vue'
-import IconArrow from '@/components/icons/IconArrow.vue'
 import ServiceMetricsList from '@/components/ServiceMetricsList.vue'
 import ServiceStatusBadge from '@/components/ServiceStatusBadge.vue'
 import ServiceVersionsPill from '@/components/ServiceVersionsPill.vue'
@@ -166,20 +178,20 @@ const sortedVersions = computed(() => {
 .service-detail {
   display: flex;
   flex-direction: column;
-  gap: 2.4rem;
+  gap: $kui-space-80;
   margin: 0 auto;
-  max-width: 96rem;
-  padding: 2.8rem $page-padding 4rem;
+  max-width: 960px;
+  padding: $kui-space-90 $page-padding $kui-space-100;
 
   &__back-link {
     align-items: center;
     align-self: flex-start;
-    border-radius: 0.4rem;
+    border-radius: $kui-border-radius-20;
     color: $color-link;
     display: inline-flex;
-    font-size: 1.4rem;
-    font-weight: 500;
-    gap: 0.8rem;
+    font-size: $kui-font-size-30;
+    font-weight: $kui-font-weight-medium;
+    gap: $kui-space-40;
     text-decoration: none;
 
     &:hover {
@@ -193,125 +205,60 @@ const sortedVersions = computed(() => {
   }
 
   &__panel {
-    background-color: $color-surface;
-    border-radius: 0.2rem;
+    border: none;
     box-shadow: $shadow-card;
-    padding: 2.8rem 3rem;
 
-    &--loading {
+    :deep(.card-content) {
+      padding: $kui-space-90 30px;
+    }
+
+    &--loading :deep(.card-content) {
       display: flex;
       flex-direction: column;
-      gap: 1.6rem;
+      gap: $kui-space-60;
     }
 
     &--notice {
-      align-items: center;
-      display: flex;
-      flex-direction: column;
-      gap: 0.8rem;
-      padding: 6.4rem 2.4rem;
-      text-align: center;
+      padding: $kui-space-130 $kui-space-80;
     }
   }
 
   &__status-row {
     align-items: center;
     display: flex;
-    gap: 1.2rem;
+    gap: $kui-space-50;
     justify-content: space-between;
   }
 
   &__title {
     color: $color-text-primary;
-    font-size: 2.6rem;
-    font-weight: 700;
-    margin: 1.4rem 0 0;
+    font-size: 26px;
+    font-weight: $kui-font-weight-bold;
+    margin: $kui-space-60 0 0;
   }
 
   &__description {
     color: $color-text-secondary;
-    font-size: 1.5rem;
-    line-height: 2.2rem;
-    margin: 1rem 0 0;
+    font-size: 15px;
+    line-height: $kui-line-height-30;
+    margin: 10px 0 0;
   }
 
   &__metrics {
-    margin-top: 2.4rem;
+    margin-top: $kui-space-80;
   }
 
   &__section-title {
     color: $color-text-primary;
-    font-size: 1.8rem;
-    font-weight: 600;
-    margin: 0 0 1.2rem;
-  }
-
-  &__notice-title {
-    color: $color-text-primary;
-    font-size: 1.8rem;
-    font-weight: 600;
-    margin: 0;
+    font-size: $kui-font-size-50;
+    font-weight: $kui-font-weight-semibold;
+    margin: 0 0 $kui-space-50;
   }
 
   &__notice-text {
     color: $color-text-secondary;
-    font-size: 1.4rem;
+    font-size: $kui-font-size-30;
     margin: 0;
-  }
-
-  &__retry-button {
-    background-color: transparent;
-    border: 1px solid $color-border;
-    border-radius: 0.4rem;
-    color: $color-text-primary;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 1.4rem;
-    font-weight: 600;
-    margin-top: 1.2rem;
-    padding: 0.9rem 2rem;
-
-    &:hover {
-      border-color: $color-text-muted;
-    }
-
-    &:focus-visible {
-      outline: 2px solid $color-pill-text;
-      outline-offset: 2px;
-    }
-  }
-
-  &__skeleton {
-    animation: detail-skeleton-pulse 1.6s ease-in-out infinite;
-    background-color: $color-chip-background;
-    border-radius: 0.4rem;
-    display: block;
-
-    &--badge {
-      height: 2rem;
-      width: 16rem;
-    }
-
-    &--title {
-      height: 2.8rem;
-      width: 40%;
-    }
-
-    &--text {
-      height: 1.6rem;
-      width: 70%;
-    }
-  }
-}
-
-@keyframes detail-skeleton-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.45;
   }
 }
 
@@ -325,9 +272,9 @@ const sortedVersions = computed(() => {
   &__item {
     align-items: center;
     display: grid;
-    gap: 0.8rem 2.4rem;
-    grid-template-columns: minmax(0, 1fr) auto minmax(16rem, auto) auto;
-    padding: 1.6rem 0;
+    gap: $kui-space-40 $kui-space-80;
+    grid-template-columns: minmax(0, 1fr) auto minmax(160px, auto) auto;
+    padding: $kui-space-60 0;
 
     & + & {
       border-top: 1px solid $color-border;
@@ -342,36 +289,36 @@ const sortedVersions = computed(() => {
     align-items: baseline;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem 1.6rem;
+    gap: $kui-space-20 $kui-space-60;
   }
 
   &__name {
     color: $color-text-primary;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 1.4rem;
-    font-weight: 600;
+    font-family: $kui-font-family-code;
+    font-size: $kui-font-size-30;
+    font-weight: $kui-font-weight-semibold;
   }
 
   &__description {
     color: $color-text-secondary;
-    font-size: 1.3rem;
-    line-height: 2rem;
+    font-size: 13px;
+    line-height: $kui-line-height-30;
     margin: 0;
   }
 
-  &__type-chip {
-    background-color: $color-pill-background;
-    border-radius: 0.4rem;
-    color: $color-pill-text;
-    font-size: 1.2rem;
-    font-weight: 600;
-    padding: 0.3rem 0.8rem;
+  // Recolour Kong's badge to the mock's soft-blue type chip
+  &__type-chip.k-badge {
+    --kui-color-background-info-weakest: #{$color-pill-background};
+    --kui-color-text-info: #{$color-pill-text};
+
+    font-size: $kui-font-size-20;
+    font-weight: $kui-font-weight-semibold;
   }
 
   &__developer {
     align-items: center;
     display: flex;
-    gap: 1rem;
+    gap: 10px;
 
     @media (max-width: $breakpoint-sm) {
       display: none;
@@ -380,12 +327,12 @@ const sortedVersions = computed(() => {
 
   &__developer-name {
     color: $color-text-primary;
-    font-size: 1.3rem;
+    font-size: 13px;
   }
 
   &__updated {
     color: $color-text-secondary;
-    font-size: 1.3rem;
+    font-size: 13px;
     text-align: right;
     white-space: nowrap;
   }

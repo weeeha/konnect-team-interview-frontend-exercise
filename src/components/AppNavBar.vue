@@ -16,7 +16,10 @@
         href="#"
         @click.prevent
       >
-        <IconOrganization />
+        <OrganizationIcon
+          decorative
+          :size="20"
+        />
         <span class="app-nav__item-label">Organization</span>
       </a>
       <a
@@ -24,22 +27,26 @@
         href="#"
         @click.prevent
       >
-        <IconSettings />
+        <CogIcon
+          decorative
+          :size="20"
+        />
         <span class="app-nav__item-label">Settings</span>
       </a>
     </nav>
     <div class="app-nav__user">
-      <IconUser />
+      <ProfileIcon
+        decorative
+        :size="20"
+      />
       <span class="app-nav__user-name">Katherine Ellis</span>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
+import { CogIcon, OrganizationIcon, ProfileIcon } from '@kong/icons'
 import IconLogo from '@/components/icons/IconLogo.vue'
-import IconOrganization from '@/components/icons/IconOrganization.vue'
-import IconSettings from '@/components/icons/IconSettings.vue'
-import IconUser from '@/components/icons/IconUser.vue'
 </script>
 
 <style lang="scss" scoped>
@@ -51,7 +58,7 @@ import IconUser from '@/components/icons/IconUser.vue'
   padding-left: $page-padding;
 
   &__logo {
-    border-radius: 0.4rem;
+    border-radius: $kui-border-radius-20;
     display: inline-flex;
     flex-shrink: 0;
     margin-right: auto;
@@ -65,18 +72,18 @@ import IconUser from '@/components/icons/IconUser.vue'
   &__menu {
     align-items: center;
     display: flex;
-    gap: 4rem;
-    margin-right: 4rem;
+    gap: $kui-space-100;
+    margin-right: $kui-space-100;
   }
 
   &__item {
     align-items: center;
-    border-radius: 0.4rem;
-    color: #fff;
+    border-radius: $kui-border-radius-20;
+    color: $kui-color-text-inverse;
     display: inline-flex;
-    font-size: 1.6rem;
-    font-weight: 500;
-    gap: 1.2rem;
+    font-size: $kui-font-size-40;
+    font-weight: $kui-font-weight-medium;
+    gap: $kui-space-50;
     text-decoration: none;
 
     &:hover {
@@ -93,18 +100,18 @@ import IconUser from '@/components/icons/IconUser.vue'
     align-items: center;
     align-self: stretch;
     background-color: $color-nav-user-panel;
-    color: #fff;
+    color: $kui-color-text-inverse;
     display: flex;
     flex-shrink: 0;
-    font-size: 1.6rem;
-    gap: 1.4rem;
-    padding: 0 3rem 0 2.4rem;
+    font-size: $kui-font-size-40;
+    gap: 14px;
+    padding: 0 $kui-space-90 0 $kui-space-80;
   }
 
   @media (max-width: $breakpoint-md) {
     &__menu {
-      gap: 2.4rem;
-      margin-right: 2.4rem;
+      gap: $kui-space-80;
+      margin-right: $kui-space-80;
     }
 
     &__item-label,
@@ -122,7 +129,7 @@ import IconUser from '@/components/icons/IconUser.vue'
     }
 
     &__user {
-      padding: 0 2rem;
+      padding: 0 $kui-space-70;
     }
   }
 }

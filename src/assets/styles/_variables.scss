@@ -1,5 +1,17 @@
-// Design tokens sampled from the Service Hub mock
-// (Figma: Core-UI-Team-Project)
+// ---------------------------------------------------------------------------
+// Design tokens.
+// Structural tokens (spacing, typography, radii, shadows, breakpoints) come
+// straight from Kong's published @kong/design-tokens package and are
+// re-exported here so every component receives them through the global
+// `@use` configured in vite.config.ts.
+// The colour palette below is intentionally kept local: it is sampled from the
+// Service Hub mock and overrides Kong's default brand hues (Kong ships a blue
+// primary; the mock uses teal). Keeping these as named variables lets the
+// Kongponents-based rebuild match the design pixel-for-pixel.
+// ---------------------------------------------------------------------------
+
+@forward '@kong/design-tokens/tokens/scss/variables';
+@use '@kong/design-tokens/tokens/scss/variables' as kui;
 
 // Brand
 $color-brand: #07a88d;
@@ -33,17 +45,17 @@ $color-nav-gradient-top: #092251;
 $color-nav-gradient-bottom: #083481;
 $color-nav-user-panel: #072863;
 
-// Elevation
+// Elevation (softer than Kong's default $kui-shadow, to match the mock)
 $shadow-card: 0 2px 4px rgb(60 69 87 / 4%);
 $shadow-card-hover: 0 6px 16px rgb(60 69 87 / 12%);
 $shadow-modal: 0 12px 32px rgb(9 34 81 / 24%);
 
 // Layout
 $content-max-width: 1400px;
-$page-padding: 2rem;
-$nav-height: 7rem;
+$page-padding: kui.$kui-space-70; // 20px
+$nav-height: 70px;
 
-// Breakpoints
-$breakpoint-sm: 640px;
-$breakpoint-md: 880px;
-$breakpoint-lg: 1140px;
+// Breakpoints (mapped onto Kong's scale)
+$breakpoint-sm: kui.$kui-breakpoint-mobile; // 640px
+$breakpoint-md: kui.$kui-breakpoint-phablet; // 768px
+$breakpoint-lg: kui.$kui-breakpoint-tablet; // 1024px

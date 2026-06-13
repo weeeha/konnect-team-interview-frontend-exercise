@@ -1,0 +1,17 @@
+// ---------------------------------------------------------------------------
+// Kongponents brand retheme.
+// Kongponents reads its colours from `--kui-*` custom properties (with the
+// @kong/design-tokens defaults). The Service Hub mock uses a teal primary
+// rather than Kong's stock blue, so we redefine just the primary-action tokens
+// here. This recolours every Kongponents primary surface (KButton, the KModal
+// action button, focus rings) without touching the components themselves.
+// Loaded after the design-tokens stylesheet in main.ts so these win.
+// ---------------------------------------------------------------------------
+
+:root {
+  --kui-color-background-primary: #{$color-brand};
+  --kui-color-background-primary-strong: #{$color-brand-dark}; // hover
+  --kui-color-background-primary-stronger: #00604d; // active
+  --kui-color-border-primary: #{$color-brand};
+  --kui-shadow-focus: 0 0 0 4px #{rgba($color-brand, 0.24)};
+}

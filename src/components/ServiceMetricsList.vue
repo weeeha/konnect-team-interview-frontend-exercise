@@ -41,16 +41,16 @@ defineProps<{
   color: $color-text-secondary;
   display: flex;
   flex-direction: column;
-  font-size: 1.3rem;
-  gap: 0.6rem;
-  line-height: 1.7rem;
+  font-size: 13px;
+  gap: $kui-space-30;
+  line-height: 17px;
   list-style: none;
   margin: 0;
   padding: 0;
 
   strong {
     color: $color-text-primary;
-    font-weight: 600;
+    font-weight: $kui-font-weight-semibold;
   }
 
   &__item {
@@ -61,17 +61,17 @@ defineProps<{
     &::before {
       align-self: center;
       background-color: $color-metric-bullet;
-      border-radius: 50%;
+      border-radius: $kui-border-radius-circle;
       content: '';
       flex-shrink: 0;
-      height: 0.6rem;
-      margin-right: 0.6rem;
-      width: 0.6rem;
+      height: 6px;
+      margin-right: $kui-space-30;
+      width: 6px;
     }
 
     &--muted {
       color: $color-text-primary;
-      font-weight: 600;
+      font-weight: $kui-font-weight-semibold;
 
       &::before {
         background-color: $color-status-unpublished;

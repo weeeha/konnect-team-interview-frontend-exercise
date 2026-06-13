@@ -20,30 +20,30 @@
   align-items: center;
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: $kui-space-40;
   margin: 0 auto;
   max-width: $content-max-width;
-  padding: 9.6rem $page-padding;
+  padding: $kui-space-150 $page-padding;
   text-align: center;
 
   &__title {
     color: $color-text-primary;
-    font-size: 2.6rem;
-    font-weight: 700;
+    font-size: 26px;
+    font-weight: $kui-font-weight-bold;
     margin: 0;
   }
 
   &__text {
     color: $color-text-secondary;
-    font-size: 1.5rem;
+    font-size: 15px;
     margin: 0;
   }
 
   &__link {
     color: $color-link;
-    font-size: 1.5rem;
-    font-weight: 500;
-    margin-top: 0.8rem;
+    font-size: 15px;
+    font-weight: $kui-font-weight-medium;
+    margin-top: $kui-space-40;
 
     &:hover {
       text-decoration: underline;

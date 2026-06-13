@@ -19,6 +19,9 @@
     "commit": "cz"
   },
   "dependencies": {
+    "@kong/design-tokens": "^1.23.0",
+    "@kong/icons": "^1.58.0",
+    "@kong/kongponents": "^9.59.0",
     "axios": "^1.12.2",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
